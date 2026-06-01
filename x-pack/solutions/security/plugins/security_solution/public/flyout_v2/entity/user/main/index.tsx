@@ -42,6 +42,12 @@ import { MisconfigurationInsights } from '../../shared/tools/misconfiguration_in
 import { AlertsInsights } from '../../shared/tools/alerts_insights';
 import { OktaInsights } from '../tools/okta_insights';
 import { EntraInsights } from '../tools/entra_insights';
+import { GraphView } from '../../shared/tools/graph_view';
+import { ResolutionGroup } from '../../shared/tools/resolution_group';
+import {
+  getEntityName,
+  getEntityId,
+} from '../../../../entity_analytics/components/entity_resolution/helpers';
 import { Header } from './header';
 import { Content } from './content';
 import { Footer } from './footer';
@@ -278,6 +284,30 @@ export const User: FC<UserProps> = memo(function User({
     defaultDocumentFlyoutProperties,
   ]);
 
+  const onEntityNameClick = useCallback(
+    (entity: Record<string, unknown>) => {
+      const clickedEntityName = getEntityName(entity);
+      const clickedEntityId = getEntityId(entity);
+      overlays.openSystemFlyout(
+        flyoutProviders({
+          services,
+          store,
+          history,
+          children: (
+            <User userName={clickedEntityName} entityId={clickedEntityId} scopeId={scopeId} />
+          ),
+        }),
+        {
+          ...defaultDocumentFlyoutProperties,
+          title: clickedEntityName,
+          historyKey,
+          session: 'inherit',
+        }
+      );
+    },
+    [overlays, services, store, history, historyKey, scopeId, defaultDocumentFlyoutProperties]
+  );
+
   const openDetailsPanel = useCallback(
     (path: EntityDetailsPath) => {
       const common = {
@@ -323,6 +353,33 @@ export const User: FC<UserProps> = memo(function User({
               );
           }
           break;
+        case EntityDetailsLeftPanelTab.GRAPH_VIEW:
+          if (entityStoreEntityId) {
+            return wrap(
+              <GraphView
+                entityType={EntityType.user}
+                entityName={userName}
+                entityId={entityStoreEntityId}
+                scopeId={scopeId}
+                onOpen={onOpenUser}
+              />
+            );
+          }
+          break;
+        case EntityDetailsLeftPanelTab.RESOLUTION_GROUP:
+          if (entityStoreEntityId) {
+            return wrap(
+              <ResolutionGroup
+                entityType={EntityType.user}
+                entityName={userName}
+                entityId={entityStoreEntityId}
+                scopeId={scopeId}
+                onOpen={onOpenUser}
+                onEntityNameClick={onEntityNameClick}
+              />
+            );
+          }
+          break;
         // TODO: currently dead (v1 accessed through left pane tabs, need to perhaps add preview?)
         case EntityDetailsLeftPanelTab.OKTA: {
           const oktaManagedUser = managedUser.data?.[ManagedUserDatasetKey.OKTA];
@@ -364,6 +421,7 @@ export const User: FC<UserProps> = memo(function User({
       entityStoreEntityId,
       managedUser,
       onOpenUser,
+      onEntityNameClick,
     ]
   );
 
@@ -411,6 +469,7 @@ export const User: FC<UserProps> = memo(function User({
             entityRecord={entityStoreV2Enabled ? observedUser.entityRecord ?? undefined : undefined}
             skipRiskAndCriticality={noEntityInStore}
             entityStoreEntityId={entityStoreEntityId}
+            onEntityNameClick={onEntityNameClick}
             hideHeaderIcons
           />
         )}

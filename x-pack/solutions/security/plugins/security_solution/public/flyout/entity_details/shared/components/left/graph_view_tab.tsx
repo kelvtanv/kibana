@@ -14,14 +14,31 @@ export interface GraphViewTabProps {
   entityId: string;
   /** Scope ID for the flyout panel */
   scopeId: string;
+  /**
+   * When provided, overrides the default entity-node click handler.
+   */
+  onOpenEntityPreview?: (params: {
+    engineType: string | undefined;
+    entityId: string;
+    entityName: string | undefined;
+  }) => void;
 }
 
 /**
  * Graph view tab content for entity detail left panels.
  * Renders the full graph investigation view centered on the given entity.
  */
-export const GraphViewTab: FC<GraphViewTabProps> = memo(({ entityId, scopeId }) => {
-  return <GraphVisualization mode="entity" entityId={entityId} scopeId={scopeId} />;
-});
+export const GraphViewTab: FC<GraphViewTabProps> = memo(
+  ({ entityId, scopeId, onOpenEntityPreview }) => {
+    return (
+      <GraphVisualization
+        mode="entity"
+        entityId={entityId}
+        scopeId={scopeId}
+        onOpenEntityPreview={onOpenEntityPreview}
+      />
+    );
+  }
+);
 
 GraphViewTab.displayName = 'GraphViewTab';

@@ -40,6 +40,12 @@ import { RiskInputs } from '../../shared/tools/risk_inputs';
 import { MisconfigurationInsights } from '../../shared/tools/misconfiguration_insights';
 import { VulnerabilityInsights } from '../tools/vulnerability_insights';
 import { AlertsInsights } from '../../shared/tools/alerts_insights';
+import { GraphView } from '../../shared/tools/graph_view';
+import { ResolutionGroup } from '../../shared/tools/resolution_group';
+import {
+  getEntityName,
+  getEntityId,
+} from '../../../../entity_analytics/components/entity_resolution/helpers';
 import { Header } from './header';
 import { Content } from './content';
 import { Footer } from './footer';
@@ -276,6 +282,30 @@ export const Host: FC<HostProps> = memo(function Host({
     defaultDocumentFlyoutProperties,
   ]);
 
+  const onEntityNameClick = useCallback(
+    (entity: Record<string, unknown>) => {
+      const clickedEntityName = getEntityName(entity);
+      const clickedEntityId = getEntityId(entity);
+      overlays.openSystemFlyout(
+        flyoutProviders({
+          services,
+          store,
+          history,
+          children: (
+            <Host hostName={clickedEntityName} entityId={clickedEntityId} scopeId={scopeId} />
+          ),
+        }),
+        {
+          ...defaultDocumentFlyoutProperties,
+          title: clickedEntityName,
+          historyKey,
+          session: 'inherit',
+        }
+      );
+    },
+    [overlays, services, store, history, historyKey, scopeId, defaultDocumentFlyoutProperties]
+  );
+
   const openDetailsPanel = useCallback(
     (path: EntityDetailsPath) => {
       const common = {
@@ -329,6 +359,34 @@ export const Host: FC<HostProps> = memo(function Host({
                 />
               );
           }
+          break;
+        case EntityDetailsLeftPanelTab.GRAPH_VIEW:
+          if (entityStoreEntityId) {
+            return wrap(
+              <GraphView
+                entityType={EntityType.host}
+                entityName={hostName}
+                entityId={entityStoreEntityId}
+                scopeId={scopeId}
+                onOpen={onOpenHost}
+              />
+            );
+          }
+          break;
+        case EntityDetailsLeftPanelTab.RESOLUTION_GROUP:
+          if (entityStoreEntityId) {
+            return wrap(
+              <ResolutionGroup
+                entityType={EntityType.host}
+                entityName={hostName}
+                entityId={entityStoreEntityId}
+                scopeId={scopeId}
+                onOpen={onOpenHost}
+                onEntityNameClick={onEntityNameClick}
+              />
+            );
+          }
+          break;
       }
     },
     [
@@ -342,6 +400,7 @@ export const Host: FC<HostProps> = memo(function Host({
       scopeId,
       entityStoreEntityId,
       onOpenHost,
+      onEntityNameClick,
     ]
   );
 
@@ -388,6 +447,7 @@ export const Host: FC<HostProps> = memo(function Host({
             entityRecord={entityStoreV2Enabled ? observedHost.entityRecord ?? undefined : undefined}
             skipRiskAndCriticality={noEntityInStore}
             entityStoreEntityId={entityStoreEntityId}
+            onEntityNameClick={onEntityNameClick}
             hideHeaderIcons
           />
         )}

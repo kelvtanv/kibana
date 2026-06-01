@@ -31,6 +31,7 @@ import { GRAPH_VISUALIZATION_TEST_ID } from './test_ids';
 import { useInvestigateInTimeline } from '../../../common/hooks/timeline/use_investigate_in_timeline';
 import { normalizeTimeRange } from '../../../common/utils/normalize_time_range';
 import { useIsExperimentalFeatureEnabled } from '../../../common/hooks/use_experimental_features';
+import { useIsInSecurityApp } from '../../../common/hooks/is_in_security_app';
 import { DocumentDetailsPreviewPanelKey } from '../../document_details/shared/constants/panel_keys';
 import {
   ALERT_PREVIEW_BANNER,
@@ -74,7 +75,23 @@ interface EntityGraphVisualizationProps {
   entityId: string;
 }
 
-export type GraphVisualizationProps = EventGraphVisualizationProps | EntityGraphVisualizationProps;
+/** Shared optional overrides that work in both event and entity modes. */
+interface GraphVisualizationOverrideProps {
+  /**
+   * When provided, overrides the default entity-node click handler.
+   */
+  onOpenEntityPreview?: (params: {
+    engineType: string | undefined;
+    entityId: string;
+    entityName: string | undefined;
+  }) => void;
+}
+
+export type GraphVisualizationProps = (
+  | EventGraphVisualizationProps
+  | EntityGraphVisualizationProps
+) &
+  GraphVisualizationOverrideProps;
 
 /**
  * Full-screen graph investigation view for use in left-panel flyout tabs.
@@ -83,7 +100,7 @@ export type GraphVisualizationProps = EventGraphVisualizationProps | EntityGraph
  * - 'entity': driven by an Entity Store entity ID (used in entity detail panels).
  */
 export const GraphVisualization: React.FC<GraphVisualizationProps> = memo((props) => {
-  const { scopeId } = props;
+  const { scopeId, onOpenEntityPreview } = props;
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const height = useFlyoutBodyAvailableHeight(wrapperRef);
@@ -132,6 +149,14 @@ export const GraphVisualization: React.FC<GraphVisualizationProps> = memo((props
         id: string;
         entity?: NodeDocumentDataModel['entity'];
       }) => {
+        if (onOpenEntityPreview) {
+          return onOpenEntityPreview({
+            engineType: item.entity?.engine_type,
+            entityId: item.id,
+            entityName: item.entity?.name,
+          });
+        }
+
         const engineType = item.entity?.engine_type;
         const panelId =
           engineType && engineType in EntityPanelKeyByType
@@ -247,8 +272,10 @@ export const GraphVisualization: React.FC<GraphVisualizationProps> = memo((props
         });
       }
     },
-    [toasts, openPreviewPanel, scopeId, dataViewIndexPattern]
+    [toasts, openPreviewPanel, scopeId, dataViewIndexPattern, onOpenEntityPreview]
   );
+
+  const isInSecurityApp = useIsInSecurityApp();
 
   const { investigateInTimeline } = useInvestigateInTimeline();
   const openTimelineCallback = useCallback(
@@ -326,7 +353,7 @@ export const GraphVisualization: React.FC<GraphVisualizationProps> = memo((props
                     },
                   }
             }
-            showInvestigateInTimeline={hasTimelineAccess}
+            showInvestigateInTimeline={hasTimelineAccess && isInSecurityApp}
             showToggleSearch={true}
             onInvestigateInTimeline={openTimelineCallback}
             onOpenEventPreview={onOpenEventPreview}

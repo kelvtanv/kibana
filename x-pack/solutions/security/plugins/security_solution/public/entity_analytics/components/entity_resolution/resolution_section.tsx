@@ -31,6 +31,10 @@ interface ResolutionSectionProps {
   entityType: EntityType;
   scopeId: string;
   openDetailsPanel: (path: EntityDetailsPath) => void;
+  /** When provided, entity-name clicks in the resolution table use this callback. */
+  onEntityNameClick?: (entity: Record<string, unknown>) => void;
+  /** When true, hides the arrowStart icon in the resolution group panel header. Used by the v2 flyout. */
+  hideHeaderIcon?: boolean;
 }
 
 export const ResolutionSection: React.FC<ResolutionSectionProps> = ({
@@ -38,6 +42,8 @@ export const ResolutionSection: React.FC<ResolutionSectionProps> = ({
   entityType,
   scopeId,
   openDetailsPanel,
+  onEntityNameClick,
+  hideHeaderIcon = false,
 }) => {
   const {
     data: group,
@@ -56,6 +62,11 @@ export const ResolutionSection: React.FC<ResolutionSectionProps> = ({
 
   const handleEntityNameClick = useCallback(
     (entity: Record<string, unknown>) => {
+      if (onEntityNameClick) {
+        onEntityNameClick(entity);
+        return;
+      }
+
       const clickedEntityId = getEntityId(entity);
       const clickedEntityName = getEntityName(entity);
       const panelKey = EntityPanelKeyByType[entityType];
@@ -75,7 +86,7 @@ export const ResolutionSection: React.FC<ResolutionSectionProps> = ({
         },
       });
     },
-    [openFlyout, entityType, scopeId]
+    [onEntityNameClick, openFlyout, entityType, scopeId]
   );
 
   const targetEntityId = group?.target ? getEntityId(group.target) : undefined;
@@ -99,7 +110,7 @@ export const ResolutionSection: React.FC<ResolutionSectionProps> = ({
             callback: handleOpenResolutionTab,
             tooltip: RESOLUTION_GROUP_LINK_TOOLTIP,
           },
-          iconType: 'arrowStart',
+          iconType: hideHeaderIcon ? undefined : 'arrowStart',
         }}
         expand={{ expandable: false }}
         data-test-subj={RESOLUTION_GROUP_LINK_TEST_ID}

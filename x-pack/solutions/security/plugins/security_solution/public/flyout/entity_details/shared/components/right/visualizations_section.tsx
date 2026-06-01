@@ -29,11 +29,13 @@ export const VisualizationsSection = memo(
     isPreviewMode,
     scopeId,
     openDetailsPanel,
+    hideHeaderIcon = false,
   }: {
     entityId: string;
     isPreviewMode: boolean;
     scopeId: string;
     openDetailsPanel?: (path: EntityDetailsPath) => void;
+    hideHeaderIcon?: boolean;
   }) => {
     const expanded = useExpandSection({
       storageKey: FLYOUT_STORAGE_KEYS.OVERVIEW_TAB_EXPANDED_SECTIONS,
@@ -58,7 +60,7 @@ export const VisualizationsSection = memo(
           >
             <EntityGraphPreviewContainer
               entityId={entityId}
-              showIcon={!isPreviewMode}
+              showIcon={!isPreviewMode && !hideHeaderIcon}
               disableNavigation={isPreviewMode || scopeId === TableId.rulePreview}
               onShowGraph={handleOpenGraphViewTab}
             />

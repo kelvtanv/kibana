@@ -25,7 +25,9 @@ export interface EdgeLabelContainerProps {
   scale?: number;
 }
 
-export const EdgeLabelContainer = styled.div<EdgeLabelContainerProps>`
+export const EdgeLabelContainer = styled('div', {
+  target: 'kbn-graph-edge-label-container',
+})<EdgeLabelContainerProps>`
   position: absolute;
   ${(props) =>
     props.scale && 0 < props.scale && props.scale < 1

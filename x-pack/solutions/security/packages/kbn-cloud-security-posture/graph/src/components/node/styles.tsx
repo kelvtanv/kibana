@@ -84,7 +84,7 @@ const LABEL_BORDER_RADIUS = 8;
 
 type NodeColor = EntityNodeViewModel['color'] | LabelNodeViewModel['color'];
 
-export const LabelNodeContainer = styled.div`
+export const LabelNodeContainer = styled('div', { target: 'kbn-graph-label-node-container' })`
   position: relative;
   top: ${(NODE_LABEL_HEIGHT - ACTUAL_LABEL_HEIGHT) / 2}px;
   text-wrap: nowrap;
@@ -218,7 +218,8 @@ export const getRelationshipColors = (
   };
 };
 
-export const NodeShapeContainer = styled.div`
+// target sets a stable class name so this component can be used as a CSS selector.
+export const NodeShapeContainer = styled('div', { target: 'kbn-graph-node-shape-container' })`
   position: relative;
   width: ${NODE_WIDTH}px;
   height: ${NODE_HEIGHT}px;
@@ -288,7 +289,10 @@ interface NodeExpandButtonContainerProps extends CommonProps {
   y?: string;
 }
 
-export const NodeExpandButtonContainer = styled.div<NodeExpandButtonContainerProps>`
+// target sets a stable class name so this component can be used as a CSS selector.
+export const NodeExpandButtonContainer = styled('div', {
+  target: 'kbn-graph-node-expand-button-container',
+})<NodeExpandButtonContainerProps>`
   appearance: none;
   opacity: 0; /* Hidden by default */
   transition: opacity 0.2s ease; /* Smooth transition */
@@ -353,7 +357,12 @@ export const NodeIcon = ({ icon, color, x, y }: NodeIconProps) => {
       <div
         css={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}
       >
-        <EuiIcon type={getSpanIcon(icon) ?? icon} size="l" color={color ?? 'primary'} />
+        <EuiIcon
+          type={getSpanIcon(icon) ?? icon}
+          size="l"
+          color={color ?? 'primary'}
+          aria-hidden={true}
+        />
       </div>
     </foreignObject>
   );

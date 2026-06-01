@@ -41,12 +41,17 @@ interface ResolutionGroupTabProps {
   entityId: string;
   entityType: EntityType;
   scopeId: string;
+  isInV2Flyout?: boolean;
+  /** Called when a user clicks an entity name in the table. Should be passed in when `isInV2Flyout` is true. */
+  onEntityNameClick?: (entity: Record<string, unknown>) => void;
 }
 
 export const ResolutionGroupTab: React.FC<ResolutionGroupTabProps> = ({
   entityId,
   entityType,
   scopeId,
+  isInV2Flyout = false,
+  onEntityNameClick,
 }) => {
   const { http } = useKibana().services;
   const { addError } = useAppToasts();
@@ -83,6 +88,11 @@ export const ResolutionGroupTab: React.FC<ResolutionGroupTabProps> = ({
 
   const handleEntityNameClick = useCallback(
     (entity: Record<string, unknown>) => {
+      if (isInV2Flyout && onEntityNameClick) {
+        onEntityNameClick(entity);
+        return;
+      }
+
       const clickedEntityId = getEntityId(entity);
       const clickedEntityName = getEntityName(entity);
       const panelKey = EntityPanelKeyByType[entityType as SecurityEntityType];
@@ -102,7 +112,7 @@ export const ResolutionGroupTab: React.FC<ResolutionGroupTabProps> = ({
         },
       });
     },
-    [openFlyout, entityType, scopeId]
+    [isInV2Flyout, onEntityNameClick, openFlyout, entityType, scopeId]
   );
 
   const handleRemoveEntity = useCallback(

@@ -59,6 +59,8 @@ export interface ContentProps {
   prefetchedResolutionRisk?: EntityRiskScore<EntityType.user>;
   /** When true, hides the chevron icons in the risk summary and alerts section headers. Used by the v2 flyout. */
   hideHeaderIcons?: boolean;
+  /** When provided, entity-name clicks in the resolution group table open a v2 flyout via this callback. */
+  onEntityNameClick?: (entity: Record<string, unknown>) => void;
 }
 
 /**
@@ -79,6 +81,7 @@ export const Content = ({
   entityStoreEntityId,
   prefetchedResolutionRisk,
   hideHeaderIcons = false,
+  onEntityNameClick,
 }: ContentProps) => {
   const hasEntityResolutionLicense = useHasEntityResolutionLicense();
 
@@ -118,6 +121,7 @@ export const Content = ({
             isPreviewMode={isPreviewMode}
             scopeId={scopeId}
             openDetailsPanel={openDetailsPanel}
+            hideHeaderIcon={hideHeaderIcons}
           />
           <EuiHorizontalRule margin="m" />
         </>
@@ -129,6 +133,8 @@ export const Content = ({
             entityType={EntityType.user}
             scopeId={scopeId}
             openDetailsPanel={openDetailsPanel}
+            onEntityNameClick={onEntityNameClick}
+            hideHeaderIcon={hideHeaderIcons}
           />
           <EuiHorizontalRule />
         </>
