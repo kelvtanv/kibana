@@ -8,17 +8,17 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { useMisconfigurationFinding } from '@kbn/cloud-security-posture/src/hooks/use_misconfiguration_finding';
-import { MisconfigurationPanel } from './misconfiguration_panel';
+import { MisconfigurationDetails } from './misconfiguration_details';
 
 jest.mock('@kbn/cloud-security-posture/src/hooks/use_misconfiguration_finding', () => ({
   useMisconfigurationFinding: jest.fn(),
 }));
 
-jest.mock('../shared/components/flyout_error', () => ({
+jest.mock('../../../shared/components/flyout_error', () => ({
   FlyoutError: () => <div data-test-subj="mockFlyoutError" />,
 }));
 
-jest.mock('../shared/components/flyout_loading', () => ({
+jest.mock('../../../shared/components/flyout_loading', () => ({
   FlyoutLoading: ({ 'data-test-subj': dataTestSubj }: { 'data-test-subj'?: string }) => (
     <div data-test-subj={dataTestSubj ?? 'mockFlyoutLoading'} />
   ),
@@ -30,20 +30,20 @@ jest.mock('@kbn/cloud-security-posture', () => ({
   ),
 }));
 
-jest.mock('../shared/components/flyout_title', () => ({
+jest.mock('../../../shared/components/flyout_title', () => ({
   FlyoutTitle: ({ title }: { title: string }) => (
     <div data-test-subj="mockFlyoutTitle">{title}</div>
   ),
 }));
 
-jest.mock('../../common/components/formatted_date', () => ({
+jest.mock('../../../../common/components/formatted_date', () => ({
   PreferenceFormattedDate: () => <span data-test-subj="mockFormattedDate" />,
 }));
 
 const mockCspHeader = jest.fn(() => <div data-test-subj="mockCspFlyoutHeader" />);
 const mockCspBody = jest.fn(() => <div data-test-subj="mockCspFlyoutBody" />);
 
-jest.mock('../../common/lib/kibana', () => ({
+jest.mock('../../../../common/lib/kibana', () => ({
   useKibana: () => ({
     services: {
       cloudSecurityPosture: {
@@ -58,28 +58,29 @@ jest.mock('../../common/lib/kibana', () => ({
 
 const useMisconfigurationFindingMock = useMisconfigurationFinding as jest.Mock;
 
-const renderPanel = () => render(<MisconfigurationPanel resourceId="resource-1" ruleId="rule-1" />);
+const renderDetails = () =>
+  render(<MisconfigurationDetails resourceId="resource-1" ruleId="rule-1" />);
 
-describe('<MisconfigurationPanel />', () => {
+describe('<MisconfigurationDetails />', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders the loading state while fetching the finding', () => {
     useMisconfigurationFindingMock.mockReturnValue({ data: undefined, isLoading: true });
-    const { getByTestId } = renderPanel();
-    expect(getByTestId('misconfiguration-panel-loading')).toBeInTheDocument();
+    const { getByTestId } = renderDetails();
+    expect(getByTestId('misconfiguration-details-loading')).toBeInTheDocument();
   });
 
   it('renders the error state when the request fails', () => {
     useMisconfigurationFindingMock.mockReturnValue({ data: undefined, isError: true });
-    const { getByTestId } = renderPanel();
+    const { getByTestId } = renderDetails();
     expect(getByTestId('mockFlyoutError')).toBeInTheDocument();
   });
 
   it('renders the error state when no finding is returned', () => {
     useMisconfigurationFindingMock.mockReturnValue({ data: { result: { hits: [] } } });
-    const { getByTestId } = renderPanel();
+    const { getByTestId } = renderDetails();
     expect(getByTestId('mockFlyoutError')).toBeInTheDocument();
   });
 
@@ -99,7 +100,7 @@ describe('<MisconfigurationPanel />', () => {
         },
       },
     });
-    const { getByTestId } = renderPanel();
+    const { getByTestId } = renderDetails();
     expect(getByTestId('mockCspEvaluationBadge')).toHaveAttribute('data-type', 'failed');
     expect(getByTestId('mockFlyoutTitle')).toHaveTextContent('My Rule');
     expect(getByTestId('mockCspFlyoutHeader')).toBeInTheDocument();
