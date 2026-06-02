@@ -72,13 +72,11 @@ export const VulnerabilitiesPreview = ({
   entityRecord,
   isPreviewMode,
   openDetailsPanel,
-  hideHeaderIcon = false,
 }: {
   identityFields: IdentityFields;
   entityRecord?: EntityStoreRecord | null;
   isPreviewMode: boolean;
   openDetailsPanel: (path: EntityDetailsPath) => void;
-  hideHeaderIcon?: boolean;
 }) => {
   useEffect(() => {
     uiMetricService.trackUiMetric(METRIC_TYPE.CLICK, ENTITY_FLYOUT_WITH_VULNERABILITY_PREVIEW);
@@ -148,8 +146,7 @@ export const VulnerabilitiesPreview = ({
   return (
     <ExpandablePanel
       header={{
-        iconType:
-          !isPreviewMode && hasVulnerabilitiesFindings && !hideHeaderIcon ? 'chevronLimitLeft' : '',
+        iconType: !isPreviewMode && hasVulnerabilitiesFindings ? 'chevronLimitLeft' : '',
         title: (
           <EuiTitle
             css={css`

@@ -7,15 +7,7 @@
 
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import type { Criteria, EuiBasicTableColumn, EuiTableSortingType } from '@elastic/eui';
-import {
-  EuiSpacer,
-  EuiPanel,
-  EuiText,
-  EuiBasicTable,
-  EuiIcon,
-  EuiButtonIcon,
-  EuiToolTip,
-} from '@elastic/eui';
+import { EuiSpacer, EuiPanel, EuiText, EuiBasicTable, EuiIcon, EuiButtonIcon } from '@elastic/eui';
 import { i18n } from '@kbn/i18n';
 import type { CspFindingResult } from '@kbn/cloud-security-posture-common';
 import { MISCONFIGURATION_STATUS } from '@kbn/cloud-security-posture-common';
@@ -181,7 +173,6 @@ export const MisconfigurationFindingsDetailsTable = memo(
     scopeId,
     entityId,
     entityType,
-    onShowFinding,
   }: {
     field: CloudPostureEntityIdentifier;
     value: string;
@@ -189,8 +180,6 @@ export const MisconfigurationFindingsDetailsTable = memo(
     /** Canonical entity store id (`host.entity.id` / `user.entity.id`); when set with v2 FF, identity fields are loaded from the store for EUID DSL. */
     entityId?: string;
     entityType?: string;
-    /** When provided, called instead of `openPreviewPanel` when the expand icon is clicked. Use this in system-flyout contexts. */
-    onShowFinding?: (resourceId: string, ruleId: string) => void;
   }) => {
     useEffect(() => {
       uiMetricService.trackUiMetric(
@@ -337,59 +326,43 @@ export const MisconfigurationFindingsDetailsTable = memo(
         name: '',
         width: `${linkWidth}`,
         render: (rule: CspBenchmarkRuleMetadata, finding: MisconfigurationFindingDetailFields) => (
-          <EuiToolTip
-            content={i18n.translate(
+          <EuiButtonIcon
+            aria-label={i18n.translate(
               'xpack.securitySolution.flyout.left.insights.misconfigurations.previewButtonAriaLabel',
               {
                 defaultMessage: 'Preview finding details',
               }
             )}
-            disableScreenReaderOutput
-          >
-            <EuiButtonIcon
-              aria-label={i18n.translate(
-                'xpack.securitySolution.flyout.left.insights.misconfigurations.previewButtonAriaLabel',
-                {
-                  defaultMessage: 'Preview finding details',
-                }
-              )}
-              iconType="maximize"
-              onClick={() => {
-                uiMetricService.trackUiMetric(
-                  METRIC_TYPE.CLICK,
-                  NAV_TO_FINDINGS_BY_RULE_NAME_FROM_ENTITY_FLYOUT
-                );
+            iconType="maximize"
+            onClick={() => {
+              uiMetricService.trackUiMetric(
+                METRIC_TYPE.CLICK,
+                NAV_TO_FINDINGS_BY_RULE_NAME_FROM_ENTITY_FLYOUT
+              );
 
-                if (onShowFinding) {
-                  onShowFinding(finding.resource.id, finding.rule.id);
-                  return;
-                }
+              const previewPanelProps: FindingsMisconfigurationPanelExpandableFlyoutPropsPreview = {
+                id: MisconfigurationFindingsPreviewPanelKey,
+                params: {
+                  resourceId: finding.resource.id,
+                  ruleId: finding.rule.id,
+                  scopeId,
+                  isPreviewMode: true,
+                  banner: {
+                    title: i18n.translate(
+                      'xpack.securitySolution.flyout.right.misconfigurationFinding.PreviewTitle',
+                      {
+                        defaultMessage: 'Preview finding details',
+                      }
+                    ),
+                    backgroundColor: 'warning',
+                    textColor: 'warning',
+                  },
+                },
+              };
 
-                const previewPanelProps: FindingsMisconfigurationPanelExpandableFlyoutPropsPreview =
-                  {
-                    id: MisconfigurationFindingsPreviewPanelKey,
-                    params: {
-                      resourceId: finding.resource.id,
-                      ruleId: finding.rule.id,
-                      scopeId,
-                      isPreviewMode: true,
-                      banner: {
-                        title: i18n.translate(
-                          'xpack.securitySolution.flyout.right.misconfigurationFinding.PreviewTitle',
-                          {
-                            defaultMessage: 'Preview finding details',
-                          }
-                        ),
-                        backgroundColor: 'warning',
-                        textColor: 'warning',
-                      },
-                    },
-                  };
-
-                openPreviewPanel(previewPanelProps);
-              }}
-            />
-          </EuiToolTip>
+              openPreviewPanel(previewPanelProps);
+            }}
+          />
         ),
       },
       {

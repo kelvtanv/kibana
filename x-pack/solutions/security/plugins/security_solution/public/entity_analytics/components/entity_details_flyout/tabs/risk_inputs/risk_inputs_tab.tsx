@@ -7,7 +7,6 @@
 
 import { i18n } from '@kbn/i18n';
 import { useEntityStoreEuidApi } from '@kbn/entity-store/public';
-import { buildDataTableRecord, type EsHitRecord } from '@kbn/discover-utils';
 import type { EuiBasicTableColumn } from '@elastic/eui';
 import {
   EuiButtonGroup,
@@ -24,12 +23,9 @@ import type { FlyoutPanelProps } from '@kbn/expandable-flyout';
 import { useExpandableFlyoutApi } from '@kbn/expandable-flyout';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useStore } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import { FormattedMessage } from '@kbn/i18n-react';
 import { ALERT_RULE_NAME } from '@kbn/rule-data-utils';
-import { DOC_VIEWER_FLYOUT_HISTORY_KEY } from '@kbn/unified-doc-viewer';
-import { get, noop } from 'lodash/fp';
+import { get } from 'lodash/fp';
 import {
   EntityDetailsLeftPanelTab,
   RiskScoreLeftPanelSubTab,
@@ -63,21 +59,12 @@ import { useAgentBuilderAvailability } from '../../../../../agent_builder/hooks/
 import { useResolutionGroup } from '../../../entity_resolution/hooks/use_resolution_group';
 import { getEntityId, getEntityField, getEntityName } from '../../../entity_resolution/helpers';
 import { useStableExpandableFlyoutState } from '../../../../../flyout/shared/hooks/use_stable_expandable_flyout_state';
-import { useKibana } from '../../../../../common/lib/kibana';
-import { useIsInSecurityApp } from '../../../../../common/hooks/is_in_security_app';
-import { flyoutProviders } from '../../../../../flyout_v2/shared/components/flyout_provider';
-import { DocumentFlyout } from '../../../../../flyout_v2/document/main';
-import { cellActionRenderer } from '../../../../../flyout_v2/shared/components/cell_actions';
-import { useDefaultDocumentFlyoutProperties } from '../../../../../flyout_v2/shared/hooks/use_default_flyout_properties';
-import { documentFlyoutHistoryKey } from '../../../../../flyout_v2/shared/constants/flyout_history';
-import { RISK_INPUTS_TAB_QUERY_ID } from './constants';
 
 export interface RiskInputsTabProps<T extends EntityType> {
   entityType: T;
   entityName: string;
   scopeId: string;
   entityId?: string;
-  isInV2Flyout?: boolean;
 }
 
 const FIRST_RECORD_PAGINATION = {
@@ -86,7 +73,7 @@ const FIRST_RECORD_PAGINATION = {
 };
 
 export const EXPAND_ALERT_TEST_ID = 'risk-input-alert-preview-button';
-export { RISK_INPUTS_TAB_QUERY_ID } from './constants';
+export const RISK_INPUTS_TAB_QUERY_ID = 'RiskInputsTabQuery';
 
 interface RiskScorePanelProps extends FlyoutPanelProps {
   params: {
@@ -122,7 +109,6 @@ export const RiskInputsTab = <T extends EntityType>({
   entityName,
   scopeId,
   entityId,
-  isInV2Flyout = false,
 }: RiskInputsTabProps<T>) => {
   const panels = useStableExpandableFlyoutState();
   const subTab = isRiskScoreFlyoutPanelProps(panels.left)
@@ -254,7 +240,6 @@ export const RiskInputsTab = <T extends EntityType>({
       refetchResolutionRiskScore={refetchResolutionRiskScore}
       resolutionGroup={resolutionGroup}
       watchlistNamesById={watchlistNamesById}
-      isInV2Flyout={isInV2Flyout}
     />
   );
 };
@@ -277,7 +262,6 @@ interface RiskInputsTabContentProps<T extends EntityType> {
   refetchResolutionRiskScore: RiskScoreState<EntityType>['refetch'];
   resolutionGroup: ReturnType<typeof useResolutionGroup>['data'];
   watchlistNamesById: Map<string, string>;
-  isInV2Flyout?: boolean;
 }
 
 const RiskInputsTabContent = <T extends EntityType>({
@@ -296,17 +280,10 @@ const RiskInputsTabContent = <T extends EntityType>({
   refetchResolutionRiskScore,
   resolutionGroup,
   watchlistNamesById,
-  isInV2Flyout = false,
 }: RiskInputsTabContentProps<T>) => {
   const { setQuery, deleteQuery } = useGlobalTime();
   const euidApi = useEntityStoreEuidApi();
   const { openPreviewPanel } = useExpandableFlyoutApi();
-  const { services } = useKibana();
-  const store = useStore();
-  const history = useHistory();
-  const isInSecurityApp = useIsInSecurityApp();
-  const historyKey = isInSecurityApp ? documentFlyoutHistoryKey : DOC_VIEWER_FLYOUT_HISTORY_KEY;
-  const defaultDocumentFlyoutProperties = useDefaultDocumentFlyoutProperties();
   const [selectedItems, setSelectedItems] = useState<InputAlert[]>([]);
   const [userSelectedView, setUserSelectedView] = useState(subTab);
   const isAssistantToolDisabled = useIsExperimentalFeatureEnabled('riskScoreAssistantToolDisabled');
@@ -320,52 +297,18 @@ const RiskInputsTabContent = <T extends EntityType>({
   const selectedView = userSelectedView ?? defaultView;
 
   const openAlertPreview = useCallback(
-    (alert: InputAlert) => {
-      if (isInSecurityApp && !isInV2Flyout) {
-        openPreviewPanel({
-          id: DocumentDetailsPreviewPanelKey,
-          params: {
-            id: alert._id,
-            indexName: alert.input.index,
-            scopeId,
-            isPreviewMode: true,
-            banner: ALERT_PREVIEW_BANNER,
-          },
-        });
-      } else {
-        const hit = buildDataTableRecord({
-          _id: alert._id,
-          _index: alert.input.index,
-          _source: alert.rawSource,
-        } as EsHitRecord);
-        services.overlays?.openSystemFlyout(
-          flyoutProviders({
-            services,
-            store,
-            history,
-            children: (
-              <DocumentFlyout
-                hit={hit}
-                renderCellActions={cellActionRenderer}
-                onAlertUpdated={noop}
-              />
-            ),
-          }),
-          { ...defaultDocumentFlyoutProperties, historyKey, session: 'inherit' }
-        );
-      }
-    },
-    [
-      isInSecurityApp,
-      isInV2Flyout,
-      openPreviewPanel,
-      scopeId,
-      services,
-      store,
-      history,
-      historyKey,
-      defaultDocumentFlyoutProperties,
-    ]
+    (id: string, indexName: string) =>
+      openPreviewPanel({
+        id: DocumentDetailsPreviewPanelKey,
+        params: {
+          id,
+          indexName,
+          scopeId,
+          isPreviewMode: true,
+          banner: ALERT_PREVIEW_BANNER,
+        },
+      }),
+    [openPreviewPanel, scopeId]
   );
 
   const isResolutionView =
@@ -434,7 +377,7 @@ const RiskInputsTabContent = <T extends EntityType>({
             <EuiButtonIcon
               iconType="expand"
               data-test-subj={EXPAND_ALERT_TEST_ID}
-              onClick={() => openAlertPreview(data)}
+              onClick={() => openAlertPreview(data._id, data.input.index)}
               aria-label={i18n.translate(
                 'xpack.securitySolution.flyout.right.alertPreview.ariaLabel',
                 {
@@ -593,7 +536,7 @@ const RiskInputsTabContent = <T extends EntityType>({
         resolutionGroup={resolutionGroup}
         watchlistNamesById={watchlistNamesById}
       />
-      {!isInV2Flyout && <EuiSpacer size="m" />}
+      <EuiSpacer size="m" />
       {riskInputsAlertSection}
       {showAiAssistantButton && (
         <>

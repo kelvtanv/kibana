@@ -95,14 +95,12 @@ export const AlertsDetailsTable = memo(
     value,
     entityId,
     entityType,
-    onShowAlert,
   }: {
     field: CloudPostureEntityIdentifier;
     value: string;
     /** Canonical entity store id (`host.entity.id` / `user.entity.id`); when set with Entity Store v2, identity is loaded from the store for EUID DSL. */
     entityId?: string;
     entityType?: 'host' | 'user';
-    onShowAlert?: (eventId: string, indexName: string) => void;
   }) => {
     const { euiTheme } = useEuiTheme();
 
@@ -334,22 +332,18 @@ export const AlertsDetailsTable = memo(
 
     const handleOnEventAlertDetailPanelOpened = useCallback(
       (eventId: string, indexName: string, tableId: string) => {
-        if (onShowAlert) {
-          onShowAlert(eventId, indexName);
-        } else {
-          openPreviewPanel({
-            id: DocumentDetailsPreviewPanelKey,
-            params: {
-              id: eventId,
-              indexName,
-              scopeId: tableId,
-              isPreviewMode: true,
-              banner: ALERT_PREVIEW_BANNER,
-            },
-          });
-        }
+        openPreviewPanel({
+          id: DocumentDetailsPreviewPanelKey,
+          params: {
+            id: eventId,
+            indexName,
+            scopeId: tableId,
+            isPreviewMode: true,
+            banner: ALERT_PREVIEW_BANNER,
+          },
+        });
       },
-      [onShowAlert, openPreviewPanel]
+      [openPreviewPanel]
     );
 
     const tableId = TableId.alertsOnRuleDetailsPage;
