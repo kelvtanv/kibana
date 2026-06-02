@@ -70,7 +70,6 @@ export const ResolutionSection: React.FC<ResolutionSectionProps> = ({
             callback: handleOpenResolutionTab,
             tooltip: RESOLUTION_GROUP_LINK_TOOLTIP,
           },
-          iconType: undefined,
         }}
         expand={{ expandable: false }}
         data-test-subj={RESOLUTION_GROUP_LINK_TEST_ID}
