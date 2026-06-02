@@ -7,21 +7,21 @@
 
 import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
-import { TestProviders } from '../../../common/mock';
+import { TestProviders } from '../../../../common/mock';
 import { times } from 'lodash/fp';
 import { EXPAND_ALERT_TEST_ID, RiskInputsTab } from './risk_inputs_tab';
-import { alertInputDataMock } from '../entity_details_flyout/mocks';
-import { RiskSeverity } from '../../../../common/search_strategy';
-import { EntityType } from '../../../../common/entity_analytics/types';
+import { alertInputDataMock } from '../../entity_details_flyout/mocks';
+import { RiskSeverity } from '../../../../../common/search_strategy';
+import { EntityType } from '../../../../../common/entity_analytics/types';
 import {
   EntityDetailsLeftPanelTab,
   RiskScoreLeftPanelSubTab,
-} from '../../../flyout/entity_details/shared/components/left_panel/left_panel_header';
+} from '../../../../flyout/entity_details/shared/components/left_panel/left_panel_header';
 
 const mockUseRiskContributingAlerts = jest.fn().mockReturnValue({ loading: false, data: [] });
 const mockGetEuidFromObject = jest.fn().mockReturnValue('user:entity-1');
 
-jest.mock('../../hooks/use_risk_contributing_alerts', () => ({
+jest.mock('../../../hooks/use_risk_contributing_alerts', () => ({
   useRiskContributingAlerts: () => mockUseRiskContributingAlerts(),
 }));
 
@@ -45,25 +45,25 @@ jest.mock('@kbn/kibana-react-plugin/public', () => {
 
 const mockUseRiskScore = jest.fn().mockReturnValue({ loading: false, data: [] });
 
-jest.mock('../../api/hooks/use_risk_score', () => ({
+jest.mock('../../../api/hooks/use_risk_score', () => ({
   useRiskScore: (params: unknown) => mockUseRiskScore(params),
 }));
 
 const mockUseGetWatchlists = jest.fn().mockReturnValue({ data: [] });
 
-jest.mock('../../api/hooks/use_get_watchlists', () => ({
+jest.mock('../../../api/hooks/use_get_watchlists', () => ({
   useGetWatchlists: () => mockUseGetWatchlists(),
 }));
 
 const mockUseResolutionGroup = jest.fn().mockReturnValue({ data: undefined });
 
-jest.mock('../entity_resolution/hooks/use_resolution_group', () => ({
+jest.mock('../../entity_resolution/hooks/use_resolution_group', () => ({
   useResolutionGroup: (entityId: string) => mockUseResolutionGroup(entityId),
 }));
 
 const mockUseStableExpandableFlyoutState = jest.fn().mockReturnValue({});
 
-jest.mock('../../../flyout/shared/hooks/use_stable_expandable_flyout_state', () => ({
+jest.mock('../../../../flyout/shared/hooks/use_stable_expandable_flyout_state', () => ({
   useStableExpandableFlyoutState: () => mockUseStableExpandableFlyoutState(),
 }));
 

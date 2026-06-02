@@ -13,7 +13,7 @@ import { useHasEntityResolutionLicense } from '../../../../common/hooks/use_has_
 import { EntityHighlightsAccordion } from '../../../../entity_analytics/components/entity_details_flyout/components/entity_highlights';
 import { EntityInsight } from '../../../../cloud_security_posture/components/flyout_v2/entity_insight';
 import { AssetCriticalityAccordion } from '../../../../entity_analytics/components/asset_criticality/asset_criticality_selector';
-import { FlyoutRiskSummary } from '../../../../entity_analytics/components/flyout_v2/risk_summary';
+import { FlyoutRiskSummary } from '../../../../entity_analytics/components/flyout_v2/risk_summary_flyout/risk_summary';
 import type { RiskScoreState } from '../../../../entity_analytics/api/hooks/use_risk_score';
 import { EntityIdentifierFields, EntityType } from '../../../../../common/entity_analytics/types';
 import { HOST_PANEL_OBSERVED_HOST_QUERY_ID, HOST_PANEL_RISK_SCORE_QUERY_ID } from './constants';
@@ -21,8 +21,8 @@ import type { EntityDetailsPath } from '../../../../flyout/entity_details/shared
 import type { IdentityFields } from '../../../../flyout/document_details/shared/utils';
 import type { ObservedEntityData } from '../../shared/components/observed_entity/types';
 import type { EntityRiskScore, HostItem } from '../../../../../common/search_strategy';
-import { VisualizationsSection } from '../../../../flyout/entity_details/shared/components/right/visualizations_section';
-import { ResolutionSection } from '../../../../entity_analytics/components/entity_resolution/resolution_section';
+import { VisualizationsSection } from '../../../../entity_analytics/components/flyout_v2/visualizations_section';
+import { ResolutionSection } from '../../../../entity_analytics/components/flyout_v2/entity_resolution/resolution_section';
 
 type ObservedHostData = Omit<ObservedEntityData<HostItem>, 'anomalies'>;
 
@@ -53,8 +53,6 @@ export interface ContentProps {
   entityStoreEntityId?: string;
   /** See {@link RiskSummaryProps.prefetchedResolutionRisk}. */
   prefetchedResolutionRisk?: EntityRiskScore<EntityType.host>;
-  /** When true, hides the chevron icons in the risk summary and alerts section headers. Used by the v2 flyout. */
-  hideHeaderIcons?: boolean;
   /** When provided, entity-name clicks in the resolution group table open a v2 flyout via this callback. */
   onEntityNameClick?: (entity: Record<string, unknown>) => void;
 }
@@ -76,7 +74,6 @@ export const Content = ({
   skipRiskAndCriticality = false,
   entityStoreEntityId,
   prefetchedResolutionRisk,
-  hideHeaderIcons = false,
   onEntityNameClick,
 }: ContentProps) => {
   const hasEntityResolutionLicense = useHasEntityResolutionLicense();
@@ -117,7 +114,6 @@ export const Content = ({
             isPreviewMode={isPreviewMode}
             scopeId={scopeId}
             openDetailsPanel={openDetailsPanel}
-            hideHeaderIcon={hideHeaderIcons}
           />
           <EuiHorizontalRule margin="m" />
         </>
@@ -126,11 +122,8 @@ export const Content = ({
         <>
           <ResolutionSection
             entityId={entityStoreEntityId}
-            entityType={EntityType.host}
-            scopeId={scopeId}
             openDetailsPanel={openDetailsPanel}
             onEntityNameClick={onEntityNameClick}
-            hideHeaderIcon={hideHeaderIcons}
           />
           <EuiHorizontalRule />
         </>

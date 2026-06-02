@@ -7,21 +7,24 @@
 
 import React, { memo, useCallback } from 'react';
 import { TableId } from '@kbn/securitysolution-data-table';
-import { FLYOUT_STORAGE_KEYS } from '../../../../../flyout_v2/document/main/constants/local_storage';
-import { useExpandSection } from '../../../../../flyout_v2/shared/hooks/use_expand_section';
-import { ExpandableSection } from '../../../../../flyout_v2/shared/components/expandable_section';
+import { FLYOUT_STORAGE_KEYS } from '../../../flyout_v2/document/main/constants/local_storage';
+import { useExpandSection } from '../../../flyout_v2/shared/hooks/use_expand_section';
+import { ExpandableSection } from '../../../flyout_v2/shared/components/expandable_section';
 import {
   VISUALIZATION_SECTION_TEST_ID,
   VISUALIZATION_SECTION_TITLE,
-} from '../../../../../flyout_v2/document/main/components/visualizations_section';
-import { useShouldShowGraph } from '../../../../shared/hooks/use_should_show_graph';
-import { EntityDetailsLeftPanelTab, type EntityDetailsPath } from '../left_panel/left_panel_header';
-import { EntityGraphPreviewContainer } from './entity_graph_preview_container';
+} from '../../../flyout_v2/document/main/components/visualizations_section';
+import { useShouldShowGraph } from '../../../flyout/shared/hooks/use_should_show_graph';
+import {
+  EntityDetailsLeftPanelTab,
+  type EntityDetailsPath,
+} from '../../../flyout/entity_details/shared/components/left_panel/left_panel_header';
+import { EntityGraphPreviewContainer } from '../../../flyout/entity_details/shared/components/right/entity_graph_preview_container';
 
 const KEY = 'visualizations';
 
 /**
- * Visualizations section in overview. It contains analyzer preview and session view preview.
+ * Visualizations section for the v2 entity flyout. Header icon is always hidden.
  */
 export const VisualizationsSection = memo(
   ({
@@ -40,7 +43,6 @@ export const VisualizationsSection = memo(
       title: KEY,
       defaultValue: false,
     });
-    // Decide whether to show the graph preview or not
     const shouldShowGraph = useShouldShowGraph();
     const handleOpenGraphViewTab = useCallback(() => {
       openDetailsPanel?.({ tab: EntityDetailsLeftPanelTab.GRAPH_VIEW });
@@ -58,7 +60,7 @@ export const VisualizationsSection = memo(
           >
             <EntityGraphPreviewContainer
               entityId={entityId}
-              showIcon={!isPreviewMode}
+              showIcon={false}
               disableNavigation={isPreviewMode || scopeId === TableId.rulePreview}
               onShowGraph={handleOpenGraphViewTab}
             />

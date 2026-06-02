@@ -9,7 +9,7 @@ import React, { memo } from 'react';
 import { EuiFlyoutBody, EuiFlyoutHeader } from '@elastic/eui';
 import { i18n } from '@kbn/i18n';
 import { EntityType } from '../../../../../../common/entity_analytics/types';
-import { RiskInputsTab } from '../../../../../entity_analytics/components/flyout_v2/risk_inputs_tab';
+import { RiskInputsTab } from '../../../../../entity_analytics/components/flyout_v2/entity_details_flyout/risk_inputs_tab';
 import { ToolsFlyoutHeader } from '../../../../shared/components/tools_flyout_header';
 import { RISK_INPUTS_TOOL_TEST_ID } from './test_ids';
 

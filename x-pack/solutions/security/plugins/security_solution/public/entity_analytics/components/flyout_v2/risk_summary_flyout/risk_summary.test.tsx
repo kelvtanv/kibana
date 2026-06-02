@@ -8,22 +8,22 @@
 import {
   mockHostRiskScoreState,
   mockUserRiskScoreState,
-} from '../../../flyout/entity_details/mocks';
+} from '../../../../flyout/entity_details/mocks';
 import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
-import { TestProviders } from '../../../common/mock';
+import { TestProviders } from '../../../../common/mock';
 import { FlyoutRiskSummary } from './risk_summary';
 import type {
   LensAttributes,
   VisualizationEmbeddableProps,
-} from '../../../common/components/visualization_actions/types';
+} from '../../../../common/components/visualization_actions/types';
 import type { Query } from '@kbn/es-query';
-import { EntityType } from '../../../../common/search_strategy';
-import type { RiskScoreState } from '../../api/hooks/use_risk_score';
+import { EntityType } from '../../../../../common/search_strategy';
+import type { RiskScoreState } from '../../../api/hooks/use_risk_score';
 import {
   EntityDetailsLeftPanelTab,
   RiskScoreLeftPanelSubTab,
-} from '../../../flyout/entity_details/shared/components/left_panel/left_panel_header';
+} from '../../../../flyout/entity_details/shared/components/left_panel/left_panel_header';
 
 const mockVisualizationEmbeddable = jest
   .fn()

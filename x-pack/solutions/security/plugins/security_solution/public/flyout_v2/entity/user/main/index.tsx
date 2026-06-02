@@ -470,7 +470,6 @@ export const User: FC<UserProps> = memo(function User({
             skipRiskAndCriticality={noEntityInStore}
             entityStoreEntityId={entityStoreEntityId}
             onEntityNameClick={onEntityNameClick}
-            hideHeaderIcons
           />
         )}
       </EuiFlyoutBody>

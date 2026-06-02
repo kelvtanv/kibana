@@ -7,37 +7,34 @@
 
 import React, { useCallback } from 'react';
 import { EuiAccordion, EuiSpacer, EuiTitle } from '@elastic/eui';
-import { useExpandableFlyoutApi } from '@kbn/expandable-flyout';
-import type { EntityType } from '../../../../common/entity_analytics/types';
-import { ExpandablePanel } from '../../../flyout_v2/shared/components/expandable_panel';
-import { EntityDetailsLeftPanelTab } from '../../../flyout/entity_details/shared/components/left_panel/left_panel_header';
-import type { EntityDetailsPath } from '../../../flyout/entity_details/shared/components/left_panel/left_panel_header';
+import { ExpandablePanel } from '../../../../flyout_v2/shared/components/expandable_panel';
 import {
-  EntityPanelKeyByType,
-  EntityPanelParamByType,
-} from '../../../flyout/entity_details/shared/constants';
-import { useResolutionGroup } from './hooks/use_resolution_group';
-import { ResolutionGroupTable } from './resolution_group_table';
+  EntityDetailsLeftPanelTab,
+  type EntityDetailsPath,
+} from '../../../../flyout/entity_details/shared/components/left_panel/left_panel_header';
+import { useResolutionGroup } from '../../entity_resolution/hooks/use_resolution_group';
+import { ResolutionGroupTable } from '../../entity_resolution/resolution_group_table';
 import {
   RESOLUTION_SECTION_TITLE,
   RESOLUTION_GROUP_LINK_TITLE,
   RESOLUTION_GROUP_LINK_TOOLTIP,
-} from './translations';
-import { RESOLUTION_GROUP_LINK_TEST_ID, RESOLUTION_SECTION_TEST_ID } from './test_ids';
-import { getEntityId, getEntityName } from './helpers';
+} from '../../entity_resolution/translations';
+import {
+  RESOLUTION_GROUP_LINK_TEST_ID,
+  RESOLUTION_SECTION_TEST_ID,
+} from '../../entity_resolution/test_ids';
+import { getEntityId } from '../../entity_resolution/helpers';
 
 interface ResolutionSectionProps {
   entityId: string;
-  entityType: EntityType;
-  scopeId: string;
   openDetailsPanel: (path: EntityDetailsPath) => void;
+  onEntityNameClick?: (entity: Record<string, unknown>) => void;
 }
 
 export const ResolutionSection: React.FC<ResolutionSectionProps> = ({
   entityId,
-  entityType,
-  scopeId,
   openDetailsPanel,
+  onEntityNameClick,
 }) => {
   const {
     data: group,
@@ -48,35 +45,9 @@ export const ResolutionSection: React.FC<ResolutionSectionProps> = ({
     enabled: !!entityId,
   });
 
-  const { openFlyout } = useExpandableFlyoutApi();
-
   const handleOpenResolutionTab = useCallback(() => {
     openDetailsPanel({ tab: EntityDetailsLeftPanelTab.RESOLUTION_GROUP });
   }, [openDetailsPanel]);
-
-  const handleEntityNameClick = useCallback(
-    (entity: Record<string, unknown>) => {
-      const clickedEntityId = getEntityId(entity);
-      const clickedEntityName = getEntityName(entity);
-      const panelKey = EntityPanelKeyByType[entityType];
-      const panelParam = EntityPanelParamByType[entityType];
-
-      if (!panelKey || !panelParam) return;
-
-      openFlyout({
-        right: {
-          id: panelKey,
-          params: {
-            [panelParam]: clickedEntityName,
-            entityId: clickedEntityId,
-            contextID: scopeId,
-            scopeId,
-          },
-        },
-      });
-    },
-    [openFlyout, entityType, scopeId]
-  );
 
   const targetEntityId = group?.target ? getEntityId(group.target) : undefined;
 
@@ -99,7 +70,7 @@ export const ResolutionSection: React.FC<ResolutionSectionProps> = ({
             callback: handleOpenResolutionTab,
             tooltip: RESOLUTION_GROUP_LINK_TOOLTIP,
           },
-          iconType: 'arrowStart',
+          iconType: undefined,
         }}
         expand={{ expandable: false }}
         data-test-subj={RESOLUTION_GROUP_LINK_TEST_ID}
@@ -109,7 +80,7 @@ export const ResolutionSection: React.FC<ResolutionSectionProps> = ({
           isLoading={isLoading || isFetching}
           isError={isError}
           targetEntityId={targetEntityId}
-          onEntityNameClick={handleEntityNameClick}
+          onEntityNameClick={onEntityNameClick}
           currentEntityId={entityId}
         />
       </ExpandablePanel>

@@ -21,27 +21,27 @@ import { FormattedMessage } from '@kbn/i18n-react';
 import dateMath from '@kbn/datemath';
 import { i18n } from '@kbn/i18n';
 import { capitalize } from 'lodash/fp';
-import { useIsExperimentalFeatureEnabled } from '../../../common/hooks/use_experimental_features';
-import type { EntityType } from '../../../../common/entity_analytics/types';
-import { EntityTypeToIdentifierField } from '../../../../common/entity_analytics/types';
-import { useKibana } from '../../../common/lib/kibana/kibana_react';
-import type { EntityDetailsPath } from '../../../flyout/entity_details/shared/components/left_panel/left_panel_header';
+import { useIsExperimentalFeatureEnabled } from '../../../../common/hooks/use_experimental_features';
+import type { EntityType } from '../../../../../common/entity_analytics/types';
+import { EntityTypeToIdentifierField } from '../../../../../common/entity_analytics/types';
+import { useKibana } from '../../../../common/lib/kibana/kibana_react';
+import type { EntityDetailsPath } from '../../../../flyout/entity_details/shared/components/left_panel/left_panel_header';
 import {
   EntityDetailsLeftPanelTab,
   RiskScoreLeftPanelSubTab,
-} from '../../../flyout/entity_details/shared/components/left_panel/left_panel_header';
-import { InspectButton, InspectButtonContainer } from '../../../common/components/inspect';
-import { ONE_WEEK_IN_HOURS } from '../../../flyout/entity_details/shared/constants';
-import { FormattedRelativePreferenceDate } from '../../../common/components/formatted_date';
-import { VisualizationEmbeddable } from '../../../common/components/visualization_actions/visualization_embeddable';
-import { ExpandablePanel } from '../../../flyout_v2/shared/components/expandable_panel';
-import type { RiskScoreState } from '../../api/hooks/use_risk_score';
-import { useRiskScore } from '../../api/hooks/use_risk_score';
-import type { EntityRiskScore } from '../../../../common/search_strategy';
-import { getRiskScoreSummaryAttributes } from '../../lens_attributes/risk_score_summary';
-import { useSpaceId } from '../../../common/hooks/use_space_id';
-import { useResolutionGroup } from '../entity_resolution/hooks/use_resolution_group';
-import { getEntityId } from '../entity_resolution/helpers';
+} from '../../../../flyout/entity_details/shared/components/left_panel/left_panel_header';
+import { InspectButton, InspectButtonContainer } from '../../../../common/components/inspect';
+import { ONE_WEEK_IN_HOURS } from '../../../../flyout/entity_details/shared/constants';
+import { FormattedRelativePreferenceDate } from '../../../../common/components/formatted_date';
+import { VisualizationEmbeddable } from '../../../../common/components/visualization_actions/visualization_embeddable';
+import { ExpandablePanel } from '../../../../flyout_v2/shared/components/expandable_panel';
+import type { RiskScoreState } from '../../../api/hooks/use_risk_score';
+import { useRiskScore } from '../../../api/hooks/use_risk_score';
+import type { EntityRiskScore } from '../../../../../common/search_strategy';
+import { getRiskScoreSummaryAttributes } from '../../../lens_attributes/risk_score_summary';
+import { useSpaceId } from '../../../../common/hooks/use_space_id';
+import { useResolutionGroup } from '../../entity_resolution/hooks/use_resolution_group';
+import { getEntityId } from '../../entity_resolution/helpers';
 
 import {
   columnsArray,
@@ -51,8 +51,8 @@ import {
   LENS_VISUALIZATION_HEIGHT,
   LENS_VISUALIZATION_MIN_WIDTH,
   SUMMARY_TABLE_MIN_WIDTH,
-} from '../risk_summary_flyout/common';
-import { EntityEventTypes } from '../../../common/lib/telemetry';
+} from '../../risk_summary_flyout/common';
+import { EntityEventTypes } from '../../../../common/lib/telemetry';
 
 const FIRST_RECORD_PAGINATION = {
   cursorStart: 0,
