@@ -56,7 +56,6 @@ describe('<ResolutionGroup /> host', () => {
         entityType={EntityType.host}
         entityName="my-host"
         entityId="euid-123"
-        scopeId="scope"
         onEntityNameClick={noop}
       />
     );
@@ -71,7 +70,6 @@ describe('<ResolutionGroup /> host', () => {
         entityType={EntityType.host}
         entityName="my-host"
         entityId="euid-123"
-        scopeId="scope"
         onEntityNameClick={noop}
       />
     );
@@ -84,7 +82,6 @@ describe('<ResolutionGroup /> host', () => {
         entityType={EntityType.host}
         entityName="my-host"
         entityId="euid-123"
-        scopeId="my-scope"
         onEntityNameClick={noop}
       />
     );
@@ -100,7 +97,6 @@ describe('<ResolutionGroup /> host', () => {
         entityType={EntityType.host}
         entityName="my-host"
         entityId="euid-123"
-        scopeId="scope"
         onOpen={onOpen}
         onEntityNameClick={noop}
       />
@@ -119,7 +115,6 @@ describe('<ResolutionGroup /> user', () => {
         entityType={EntityType.user}
         entityName="my-user"
         entityId="euid-456"
-        scopeId="scope"
         onEntityNameClick={noop}
       />
     );
@@ -132,7 +127,6 @@ describe('<ResolutionGroup /> user', () => {
         entityType={EntityType.user}
         entityName="my-user"
         entityId="euid-456"
-        scopeId="scope"
         onEntityNameClick={noop}
       />
     );
@@ -145,7 +139,6 @@ describe('<ResolutionGroup /> user', () => {
         entityType={EntityType.user}
         entityName="my-user"
         entityId="euid-456"
-        scopeId="my-scope"
         onEntityNameClick={noop}
       />
     );
@@ -161,7 +154,6 @@ describe('<ResolutionGroup /> user', () => {
         entityType={EntityType.user}
         entityName="my-user"
         entityId="euid-456"
-        scopeId="scope"
         onOpen={onOpen}
         onEntityNameClick={noop}
       />

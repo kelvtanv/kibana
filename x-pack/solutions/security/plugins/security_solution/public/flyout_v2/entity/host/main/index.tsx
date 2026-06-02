@@ -380,7 +380,6 @@ export const Host: FC<HostProps> = memo(function Host({
                 entityType={EntityType.host}
                 entityName={hostName}
                 entityId={entityStoreEntityId}
-                scopeId={scopeId}
                 onOpen={onOpenHost}
                 onEntityNameClick={onEntityNameClick}
               />

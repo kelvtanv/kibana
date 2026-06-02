@@ -373,7 +373,6 @@ export const User: FC<UserProps> = memo(function User({
                 entityType={EntityType.user}
                 entityName={userName}
                 entityId={entityStoreEntityId}
-                scopeId={scopeId}
                 onOpen={onOpenUser}
                 onEntityNameClick={onEntityNameClick}
               />

@@ -26,8 +26,6 @@ export interface ResolutionGroupProps {
   entityName: string;
   /** Entity Store v2 id (`entity.id`) for the entity whose resolution group to display. */
   entityId: string;
-  /** Scope id (timeline id, table id, etc.) passed to the resolution tab. */
-  scopeId: string;
   /** Opens the originating entity flyout as a child. */
   onOpen?: () => void;
   /** Called when a user clicks an entity name in the resolution group table. */
@@ -35,14 +33,7 @@ export interface ResolutionGroupProps {
 }
 
 export const ResolutionGroup = memo(
-  ({
-    entityType,
-    entityName,
-    entityId,
-    scopeId,
-    onOpen,
-    onEntityNameClick,
-  }: ResolutionGroupProps) => (
+  ({ entityType, entityName, entityId, onOpen, onEntityNameClick }: ResolutionGroupProps) => (
     <>
       <EuiFlyoutHeader hasBorder>
         <ToolsFlyoutHeader
