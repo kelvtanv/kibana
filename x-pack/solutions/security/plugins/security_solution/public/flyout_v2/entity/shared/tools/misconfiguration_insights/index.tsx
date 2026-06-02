@@ -17,9 +17,9 @@ import {
 import { useKibana } from '../../../../../common/lib/kibana';
 import { flyoutProviders } from '../../../../shared/components/flyout_provider';
 import { useDefaultDocumentFlyoutProperties } from '../../../../shared/hooks/use_default_flyout_properties';
-import { MisconfigurationPanel } from '../../../../csp_details/misconfiguration_panel';
+import { MisconfigurationDetails } from '../../components/misconfiguration_details';
 import { ToolsFlyoutHeader } from '../../../../shared/components/tools_flyout_header';
-import { MisconfigurationFindingsDetailsTable } from '../../../../../cloud_security_posture/components/csp_details/misconfiguration_findings_details_table';
+import { MisconfigurationFindingsDetailsTable } from '../../../../../cloud_security_posture/components/flyout_v2/csp_details/misconfiguration_findings_details_table';
 
 const TITLE = i18n.translate(
   'xpack.securitySolution.flyout.entityDetails.misconfigurationInsights.title',
@@ -63,7 +63,7 @@ export const MisconfigurationInsights = memo(
             services,
             store,
             history,
-            children: <MisconfigurationPanel resourceId={resourceId} ruleId={ruleId} />,
+            children: <MisconfigurationDetails resourceId={resourceId} ruleId={ruleId} />,
           }),
           { ...defaultDocumentFlyoutProperties, title: value, session: 'inherit' }
         );

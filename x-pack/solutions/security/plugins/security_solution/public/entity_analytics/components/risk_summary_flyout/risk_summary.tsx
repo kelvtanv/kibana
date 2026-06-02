@@ -69,8 +69,6 @@ export interface RiskSummaryProps<T extends EntityType> {
   entityId?: string;
   /** Optional prefetched resolution-group risk; used when the internal risk-index lookup returns no doc. */
   prefetchedResolutionRisk?: EntityRiskScore<T>;
-  /** When true, hides the icon in the "Entity risk contributions" header. Defaults to false. */
-  hideHeaderIcon?: boolean;
 }
 
 const FlyoutRiskSummaryComponent = <T extends EntityType>({
@@ -82,7 +80,6 @@ const FlyoutRiskSummaryComponent = <T extends EntityType>({
   openDetailsPanel,
   isPreviewMode,
   prefetchedResolutionRisk,
-  hideHeaderIcon = false,
 }: RiskSummaryProps<T>) => {
   const { telemetry } = useKibana().services;
   const { data } = riskScoreData;
@@ -352,7 +349,7 @@ const FlyoutRiskSummaryComponent = <T extends EntityType>({
             />
           ),
           link: riskScoreData.loading ? undefined : entityTabLink,
-          iconType: !isPreviewMode && !hideHeaderIcon ? 'chevronLimitLeft' : undefined,
+          iconType: !isPreviewMode ? 'chevronLimitLeft' : undefined,
         }}
         expand={{
           expandable: false,
@@ -459,7 +456,7 @@ const FlyoutRiskSummaryComponent = <T extends EntityType>({
                 />
               ),
               link: resolutionRiskScoreData.loading ? undefined : resolutionTabLink,
-              iconType: !isPreviewMode && !hideHeaderIcon ? 'chevronLimitLeft' : undefined,
+              iconType: !isPreviewMode ? 'chevronLimitLeft' : undefined,
             }}
             expand={{
               expandable: false,
