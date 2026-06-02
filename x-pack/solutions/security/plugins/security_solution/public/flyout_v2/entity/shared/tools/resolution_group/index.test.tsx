@@ -35,26 +35,13 @@ jest.mock('../../../../shared/components/tools_flyout_header', () => ({
 }));
 
 jest.mock(
-  '../../../../../entity_analytics/components/entity_resolution/resolution_group_tab',
+  '../../../../../entity_analytics/components/flyout_v2/entity_resolution/resolution_group_tab',
   () => ({
-    ResolutionGroupTab: ({
-      entityId,
-      entityType,
-      scopeId,
-      isInV2Flyout,
-    }: {
-      entityId: string;
-      entityType: string;
-      scopeId: string;
-      isInV2Flyout?: boolean;
-      onEntityNameClick?: (entity: Record<string, unknown>) => void;
-    }) => (
+    ResolutionGroupTab: ({ entityId, entityType }: { entityId: string; entityType: string }) => (
       <div
         data-test-subj="mockResolutionGroupTab"
         data-entity-id={entityId}
         data-entity-type={entityType}
-        data-scope-id={scopeId}
-        data-is-in-v2-flyout={String(!!isInV2Flyout)}
       />
     ),
   })
@@ -91,7 +78,7 @@ describe('<ResolutionGroup /> host', () => {
     expect(getByTestId(RESOLUTION_GROUP_TOOL_TEST_ID)).toBeInTheDocument();
   });
 
-  it('passes entity context to ResolutionGroupTab with isInV2Flyout=true', () => {
+  it('passes entity context to ResolutionGroupTab', () => {
     const { getByTestId } = render(
       <ResolutionGroup
         entityType={EntityType.host}
@@ -104,8 +91,6 @@ describe('<ResolutionGroup /> host', () => {
     const tab = getByTestId('mockResolutionGroupTab');
     expect(tab).toHaveAttribute('data-entity-id', 'euid-123');
     expect(tab).toHaveAttribute('data-entity-type', 'host');
-    expect(tab).toHaveAttribute('data-scope-id', 'my-scope');
-    expect(tab).toHaveAttribute('data-is-in-v2-flyout', 'true');
   });
 
   it('forwards onOpen to the header click handler', () => {

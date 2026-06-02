@@ -9,7 +9,7 @@ import React, { memo } from 'react';
 import { EuiFlyoutBody, EuiFlyoutHeader } from '@elastic/eui';
 import { i18n } from '@kbn/i18n';
 import { EntityType } from '../../../../../../common/entity_analytics/types';
-import { ResolutionGroupTab } from '../../../../../entity_analytics/components/entity_resolution/resolution_group_tab';
+import { ResolutionGroupTab } from '../../../../../entity_analytics/components/flyout_v2/entity_resolution/resolution_group_tab';
 import { ToolsFlyoutHeader } from '../../../../shared/components/tools_flyout_header';
 import { RESOLUTION_GROUP_TOOL_TEST_ID } from './test_ids';
 
@@ -30,7 +30,7 @@ export interface ResolutionGroupProps {
   scopeId: string;
   /** Opens the originating entity flyout as a child. */
   onOpen?: () => void;
-  /** Called when a user clicks an entity name in the resolution group table. Opens the entity's v2 flyout. */
+  /** Called when a user clicks an entity name in the resolution group table. */
   onEntityNameClick: (entity: Record<string, unknown>) => void;
 }
 
@@ -56,8 +56,6 @@ export const ResolutionGroup = memo(
         <ResolutionGroupTab
           entityId={entityId}
           entityType={entityType}
-          scopeId={scopeId}
-          isInV2Flyout
           onEntityNameClick={onEntityNameClick}
         />
       </EuiFlyoutBody>

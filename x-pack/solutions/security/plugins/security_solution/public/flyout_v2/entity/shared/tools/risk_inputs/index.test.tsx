@@ -35,20 +35,18 @@ jest.mock('../../../../shared/components/tools_flyout_header', () => ({
 }));
 
 jest.mock(
-  '../../../../../entity_analytics/components/entity_details_flyout/tabs/risk_inputs/risk_inputs_tab',
+  '../../../../../entity_analytics/components/flyout_v2/entity_details_flyout/risk_inputs_tab',
   () => ({
     RiskInputsTab: ({
       entityType,
       entityName,
       scopeId,
       entityId,
-      isInV2Flyout,
     }: {
       entityType: string;
       entityName: string;
       scopeId: string;
       entityId?: string;
-      isInV2Flyout?: boolean;
     }) => (
       <div
         data-test-subj="mockRiskInputsTab"
@@ -56,7 +54,6 @@ jest.mock(
         data-entity-name={entityName}
         data-scope-id={scopeId}
         data-entity-id={entityId ?? ''}
-        data-is-in-v2-flyout={String(!!isInV2Flyout)}
       />
     ),
   })
@@ -93,7 +90,6 @@ describe('<RiskInputs /> host', () => {
     expect(tab).toHaveAttribute('data-entity-name', 'my-host');
     expect(tab).toHaveAttribute('data-scope-id', 'my-scope');
     expect(tab).toHaveAttribute('data-entity-id', 'euid-123');
-    expect(tab).toHaveAttribute('data-is-in-v2-flyout', 'true');
   });
 
   it('forwards onOpen to the header click handler for host', () => {

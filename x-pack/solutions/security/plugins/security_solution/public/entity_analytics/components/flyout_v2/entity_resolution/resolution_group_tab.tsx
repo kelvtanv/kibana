@@ -7,24 +7,21 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { EuiBadge, EuiFlexGroup, EuiFlexItem, EuiSpacer, EuiText, EuiTitle } from '@elastic/eui';
-import { useExpandableFlyoutApi } from '@kbn/expandable-flyout';
 import type { EntityType } from '@kbn/entity-store/public';
-import { API_VERSIONS } from '../../../../common/entity_analytics/constants';
+import { API_VERSIONS } from '../../../../../common/entity_analytics/constants';
+import { useKibana } from '../../../../common/lib/kibana/kibana_react';
+import { useAppToasts } from '../../../../common/hooks/use_app_toasts';
 import {
-  EntityPanelKeyByType,
-  EntityPanelParamByType,
-} from '../../../flyout/entity_details/shared/constants';
-import type { EntityType as SecurityEntityType } from '../../../../common/entity_analytics/types';
-import { useKibana } from '../../../common/lib/kibana/kibana_react';
-import { useAppToasts } from '../../../common/hooks/use_app_toasts';
-import { useResolutionGroup, RESOLUTION_GROUP_ROUTE } from './hooks/use_resolution_group';
-import type { ResolutionGroup } from './hooks/use_resolution_group';
-import { useLinkEntities } from './hooks/use_link_entities';
-import { useUnlinkEntities } from './hooks/use_unlink_entities';
-import { ResolutionGroupTable } from './resolution_group_table';
-import { AddEntitiesSection } from './add_entities_section';
-import { ConfirmResolutionModal } from './confirm_resolution_modal';
-import { getEntityId, getEntityName, getResolutionRiskScore } from './helpers';
+  useResolutionGroup,
+  RESOLUTION_GROUP_ROUTE,
+} from '../../entity_resolution/hooks/use_resolution_group';
+import type { ResolutionGroup } from '../../entity_resolution/hooks/use_resolution_group';
+import { useLinkEntities } from '../../entity_resolution/hooks/use_link_entities';
+import { useUnlinkEntities } from '../../entity_resolution/hooks/use_unlink_entities';
+import { ResolutionGroupTable } from '../../entity_resolution/resolution_group_table';
+import { AddEntitiesSection } from '../../entity_resolution/add_entities_section';
+import { ConfirmResolutionModal } from '../../entity_resolution/confirm_resolution_modal';
+import { getEntityId, getResolutionRiskScore } from '../../entity_resolution/helpers';
 import {
   RESOLUTION_GROUP_LINK_TITLE,
   RESOLUTION_ERROR_TITLE,
@@ -33,24 +30,24 @@ import {
   RISK_SCORE_NOT_AVAILABLE,
   RESOLUTION_GROUP_CREATED_TOAST,
   RESOLUTION_GROUP_CREATED_TOAST_TEXT,
-} from './translations';
-import { RESOLUTION_GROUP_TAB_CONTENT_TEST_ID } from './test_ids';
-import { RiskScoreCell } from '../home/entities_table/risk_score_cell';
+} from '../../entity_resolution/translations';
+import { RESOLUTION_GROUP_TAB_CONTENT_TEST_ID } from '../../entity_resolution/test_ids';
+import { RiskScoreCell } from '../../home/entities_table/risk_score_cell';
 
 interface ResolutionGroupTabProps {
   entityId: string;
   entityType: EntityType;
-  scopeId: string;
+  /** Called when a user clicks an entity name in the table. */
+  onEntityNameClick: (entity: Record<string, unknown>) => void;
 }
 
 export const ResolutionGroupTab: React.FC<ResolutionGroupTabProps> = ({
   entityId,
   entityType,
-  scopeId,
+  onEntityNameClick,
 }) => {
   const { http } = useKibana().services;
   const { addError } = useAppToasts();
-  const { openFlyout } = useExpandableFlyoutApi();
   const { data: group, isLoading, isFetching, isError } = useResolutionGroup(entityId);
   const linkEntities = useLinkEntities();
   const createGroup = useLinkEntities({
@@ -80,30 +77,6 @@ export const ResolutionGroupTab: React.FC<ResolutionGroupTabProps> = ({
     }
     return ids;
   }, [group, entityId]);
-
-  const handleEntityNameClick = useCallback(
-    (entity: Record<string, unknown>) => {
-      const clickedEntityId = getEntityId(entity);
-      const clickedEntityName = getEntityName(entity);
-      const panelKey = EntityPanelKeyByType[entityType as SecurityEntityType];
-      const panelParam = EntityPanelParamByType[entityType as SecurityEntityType];
-
-      if (!panelKey || !panelParam) return;
-
-      openFlyout({
-        right: {
-          id: panelKey,
-          params: {
-            [panelParam]: clickedEntityName,
-            entityId: clickedEntityId,
-            contextID: scopeId,
-            scopeId,
-          },
-        },
-      });
-    },
-    [openFlyout, entityType, scopeId]
-  );
 
   const handleRemoveEntity = useCallback(
     (removeEntityId: string) => {
@@ -213,7 +186,7 @@ export const ResolutionGroupTab: React.FC<ResolutionGroupTabProps> = ({
           onRemoveEntity={handleRemoveEntity}
           targetEntityId={targetEntityId}
           removingEntityId={removingEntityId}
-          onEntityNameClick={handleEntityNameClick}
+          onEntityNameClick={onEntityNameClick}
           currentEntityId={entityId}
         />
         <EuiSpacer size="l" />
@@ -221,7 +194,7 @@ export const ResolutionGroupTab: React.FC<ResolutionGroupTabProps> = ({
           entityType={entityType}
           excludeEntityIds={excludeEntityIds}
           onAddEntity={handleAddEntity}
-          onEntityNameClick={handleEntityNameClick}
+          onEntityNameClick={onEntityNameClick}
           addingEntityId={addingEntityId}
           disabled={!groupQueryReady}
         />
